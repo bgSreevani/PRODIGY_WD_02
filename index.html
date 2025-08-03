@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Stopwatch</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #0f0f0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #0ff;
+    }
+
+    h1 {
+      color: #0ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #0ff;
+    }
+
+    .stopwatch {
+      background: rgba(20, 20, 20, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #0ff;
+      text-align: center;
+      width: 350px;
+    }
+
+    .time {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin: 8px;
+      border: 2px solid #0ff;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: transparent;
+      color: #0ff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .buttons button:hover {
+      background: #0ff;
+      color: #000;
+      box-shadow: 0 0 12px #0ff;
+    }
+
+    .buttons i {
+      margin-right: 6px;
+    }
+
+    .laps {
+      margin-top: 20px;
+      max-height: 180px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .lap {
+      background: rgba(0, 255, 255, 0.05);
+      border-left: 4px solid #0ff;
+      padding: 6px 12px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Stopwatch</h1>
+
+  <div class="stopwatch">
+    <div class="time" id="display">00:00:00.00</div>
+    <div class="buttons">
+      <button onclick="startStopwatch()"><i class="fas fa-play"></i>Start</button>
+      <button onclick="pauseStopwatch()"><i class="fas fa-pause"></i>Pause</button>
+      <button onclick="resetStopwatch()"><i class="fas fa-redo"></i>Reset</button>
+      <button onclick="recordLap()"><i class="fas fa-flag"></i>Lap</button>
+    </div>
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime;
+    let elapsedTime = 0;
+    let timerInterval;
+    let running = false;
+
+    function timeToString(time) {
+      let diffInHrs = time / 3600000;
+      let hh = Math.floor(diffInHrs);
+
+      let diffInMin = (diffInHrs - hh) * 60;
+      let mm = Math.floor(diffInMin);
+
+      let diffInSec = (diffInMin - mm) * 60;
+      let ss = Math.floor(diffInSec);
+
+      let diffInCenti = (diffInSec - ss) * 100;
+      let cs = Math.floor(diffInCenti); // 2-digit milliseconds
+
+      let formattedHH = hh.toString().padStart(2, "0");
+      let formattedMM = mm.toString().padStart(2, "0");
+      let formattedSS = ss.toString().padStart(2, "0");
+      let formattedCS = cs.toString().padStart(2, "0");
+
+      return `${formattedHH}:${formattedMM}:${formattedSS}.${formattedCS}`;
+    }
+
+    function print(txt) {
+      document.getElementById("display").innerHTML = txt;
+    }
+
+    function startStopwatch() {
+      if (!running) {
+        running = true;
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(function () {
+          elapsedTime = Date.now() - startTime;
+          print(timeToString(elapsedTime));
+        }, 10);
+      }
+    }
+
+    function pauseStopwatch() {
+      if (running) {
+        running = false;
+        clearInterval(timerInterval);
+      }
+    }
+
+    function resetStopwatch() {
+      running = false;
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      print("00:00:00.00");
+      document.getElementById("laps").innerHTML = "";
+    }
+
+    function recordLap() {
+      if (elapsedTime === 0) return;
+      const lapTime = timeToString(elapsedTime);
+      const lapElement = document.createElement("div");
+      lapElement.className = "lap";
+      lapElement.textContent = `Lap: ${lapTime}`;
+      document.getElementById("laps").appendChild(lapElement);
+    }
+  </script>
+
+</body>
+</html>
